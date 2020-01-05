@@ -7,4 +7,6 @@ set -x fish_user_paths $HOME/.cargo/bin $HOME/.local/bin
 any-nix-shell fish --info-right | source
 starship init fish | source
 
- alias ls=exa
+alias ls=exa
+
+abbr -g bank ledger -f ~/Documents/banking/current.ledger

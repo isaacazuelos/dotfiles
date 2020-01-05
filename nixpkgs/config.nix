@@ -26,6 +26,7 @@
 
         # Deskotp Apps
         alacritty
+        emacs
         firefox
         polybar-i3
         vscode

@@ -82,8 +82,8 @@
     (add-to-list 'default-frame-alist (cons 'font font-string))))
 
 (when (display-graphic-p)
-  (when (iaz:font-exists-p "Fira Code")
-    (iaz:set-font "Fira Code" 13)))
+  (when (iaz:font-exists-p "Source Code Pro")
+    (iaz:set-font "Source Code Pro" 12)))
 
 (use-package nord-theme
   :init

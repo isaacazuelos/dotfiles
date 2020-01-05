@@ -1,3 +1,5 @@
 nvim/plugged
 emacs/elpa
 emacs/var
+
+david-nixos/passwords.nix
