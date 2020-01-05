@@ -6,8 +6,7 @@ set $mod Mod4
 
 # Make it pretty 
 
-# I don't change the default font since I never see them.
-font pango:DejaVu Sans Mono 10
+font pango:Source Code Pro 12
 
 for_window [class=".*"] border pixel 4
 
