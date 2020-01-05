@@ -2,9 +2,14 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
+# Also, use https://nixos.org/nixos/options.html to search for 
+# configuration options.
+
 { config, pkgs, ... }:
 
-{
+let
+  passwords = import ./passwords.nix;
+in {
   imports = [ ./hardware-configuration.nix ];
 
   boot.loader = {
@@ -28,11 +33,16 @@
       allowPing = true;
       allowedTCPPorts = [ 
         22 # SSH 
+        80 443 # http and https for nextcloud
       ];
       allowedUDPPortRanges = [
         { from = 60000; to = 61000; } # Mosh
       ];
     };
+  };
+
+  security.acme.certs."home.azuelos.ca" = {
+    email = "isaac@azuelos.ca";
   };
 
   i18n = {
@@ -41,7 +51,6 @@
   };
 
   time.timeZone = "Canada/Mountain";
-
 
   programs = {
     mosh.enable = true;
@@ -60,14 +69,47 @@
     fira-code
     fira-code-symbols
     source-code-pro
-    unifont
-    siji
   ];
 
   sound.enable = true;
   hardware.pulseaudio.enable = true;
 
   services = {
+    ddclient = {
+      # See https://www.namecheap.com/support/knowledgebase/article.aspx/583/
+      # for more on how this is configured.
+      enable = true;
+      username = "azuelos.ca";
+      password = passwords.dynamicDNS;
+      domains = [ "home" ];
+      use = "web, web=dynamicdns.park-your-domain.com/getip";
+      protocol = "namecheap";
+      server = "dynamicdns.park-your-domain.com";
+    };
+    nginx = {
+      enable = true;
+      virtualHosts."home.azuelos.ca" = {
+        forceSSL = true;
+        enableACME = true;
+        locations."/" = {
+          proxyPass = "http://localhost";
+        };
+      };
+    };
+    # Note that if there are any issues during the inital setup, a
+    # misconfigured `nextcloud.home` is left around which can mess up
+    # attempts to fix it. Just `rm` the file, default is
+    # `/var/lib/nextcloud`.
+    nextcloud = {
+      enable = true;
+      hostName = "home.azuelos.ca";
+      nginx.enable = true;
+      autoUpdateApps.enable = true;
+      config = {
+        adminuser = "iaz";
+        adminpass = passwords.nextcloud;
+      };
+    };
     openssh = { 
       enable = true;
       permitRootLogin = "no";
