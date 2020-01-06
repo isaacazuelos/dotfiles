@@ -3,3 +3,4 @@ emacs/elpa
 emacs/var
 
 david-nixos/passwords.nix
+very-nixos/passwords.nix
