@@ -5,10 +5,9 @@
       i3Support = true;
     };
 
-    david = pkgs.buildEnv {
-      name = "david";
+    common-tools = pkgs.buildEnv {
+      name = "common-tools";
       paths = [
-        # Command Line Tools
         any-nix-shell
         bat
         cava
@@ -16,13 +15,26 @@
         exa
         gotop
         htop
-        ledger
         neofetch
+        nixfmt
         ripgrep
         starship
         tmux
-        tree
         killall
+      ];
+      extraOutputsToInstall = [ "man" "info" ];
+    };
+
+    very = pkgs.buildEnv {
+      name = "very";
+      paths = [ common-tools ];
+      extraOutputsToInstall = [ "man" "info" ];
+    };
+
+    david = pkgs.buildEnv {
+      name = "david";
+      paths = [
+        common-tools
 
         # Deskotp Apps
         alacritty
