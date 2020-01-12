@@ -4,7 +4,9 @@
 
 { config, pkgs, ... }:
 
-let passwords = import ./passwords.nix;
+let
+  passwords = import ./passwords.nix;
+  fqdn = "${config.networking.hostName}.${config.networking.domain}";
 in {
   imports = [ # Include the results of the hardware scan.
     ./hardware-configuration.nix
@@ -30,7 +32,8 @@ in {
   networking = {
     usePredictableInterfaceNames = false;
     useDHCP = false;
-    hostName = "very.software";
+    hostName = "so";
+    domain = "very.software";
     defaultGateway = "172.105.8.1";
     nameservers = [ "172.105.0.5" "172.105.3.5" ];
     interfaces."eth0".ipv4.addresses = [{
@@ -50,13 +53,15 @@ in {
 
   security.acme.certs = {
     "very.software" = {
+      domain = "very.software";
       email = "isaac@azuelos.ca";
+      webroot = "/var/lib/acme/acme-challenge";
       group = "matrix-synapse";
-      allowKeysForGroup = true;
-      postRun =
-        "systemctl reload nginx.service; systemctl restart matrix-synapse.service";
+      extraDomains = {
+        "so.very.software" = null;
+      };
     };
-  };
+  }; 
 
   i18n = {
     consoleKeyMap = "us";
@@ -84,59 +89,88 @@ in {
     postgresql.enable = true;
     matrix-synapse = {
       enable = true;
-      server_name = "very.software";
+      server_name = config.networking.domain;
+
+      # I don't want to allow public registration.
+      # See the manual's section for how to manually register a user.
       registration_shared_secret = passwords.matrixPSK;
-      public_baseurl = "https://very.software";
-      enable_registration = true;
+      enable_registration = false;
 
-      tls_certificate_path = "/var/lib/acme/very.software/fullchain.pem";
-      tls_private_key_path = "/var/lib/acme/very.software/key.pem";
-
-      listeners = [
-        { # federation
-          bind_address = "";
-          port = 8448;
-          resources = [
-            {
-              compress = true;
-              names = [ "client" "webclient" ];
-            }
-            {
-              compress = false;
-              names = [ "federation" ];
-            }
-          ];
-          tls = true;
-          type = "http";
-          x_forwarded = false;
-        }
-        { # client
-          bind_address = "127.0.0.1";
-          port = 8008;
-          resources = [{
-            compress = true;
-            names = [ "client" "webclient" ];
-          }];
-          tls = false;
-          type = "http";
-          x_forwarded = true;
-        }
-      ];
-
+      listeners = [{
+        port = 8008;
+        bind_address = "::1";
+        type = "http";
+        tls = false;
+        x_forwarded = true;
+        resources = [{
+          names = [ "client" "federation" ];
+          compress = false;
+        }];
+      }];
     };
     nginx = {
       enable = true;
+      # only recommendedProxySettings and recommendedGzipSettings are strictly required,
+      # but the rest make sense as well
+      recommendedTlsSettings = true;
+      recommendedOptimisation = true;
+      recommendedGzipSettings = true;
+      recommendedProxySettings = true;
+
       virtualHosts = {
-        "very.software" = {
-          forceSSL = true;
+        # This host section can be placed on a different host than the rest,
+        # i.e. to delegate from the host being accessible as ${config.networking.domain}
+        # to another host actually running the Matrix homeserver.
+        "${config.networking.domain}" = {
+          locations."/".extraConfig = ''
+            return 404;
+          '';
+
+          locations."= /.well-known/so.very.software".extraConfig = let
+            # use 443 instead of the default 8448 port to unite
+            # the client-server and server-server port for simplicity
+            server = { "m.server" = "${fqdn}:443"; };
+          in ''
+            add_header Content-Type application/json;
+            return 200 '${builtins.toJSON server}';
+          '';
+          locations."= /.well-known/very.software".extraConfig = let
+            client = {
+              "m.homeserver" = { "base_url" = "https://${fqdn}"; };
+              "m.identity_server" = { "base_url" = "https://vector.im"; };
+            };
+            # ACAO required to allow riot-web on any URL to request this json file
+          in ''
+            add_header Content-Type application/json;
+            add_header Access-Control-Allow-Origin *;
+            return 200 '${builtins.toJSON client}';
+          '';
+        };
+
+        # Reverse proxy for Matrix client-server and server-server communication
+        ${fqdn} = {
           enableACME = true;
-          locations."/" = { proxyPass = "http://localhost:8008"; };
+          forceSSL = true;
+
+          # Or do a redirect instead of the 404, or whatever is appropriate for you.
+          # But do not put a Matrix Web client here! See the Riot Web section below.
+          locations."/".extraConfig = ''
+            return 404;
+          '';
+
+          # forward all Matrix API calls to the synapse Matrix homeserver
+          locations."/_matrix" = {
+            proxyPass = "http://[::1]:8008"; # without a trailing /
+          };
         };
       };
     };
     openssh = {
       enable = true;
       permitRootLogin = "yes";
+
+      passwordAuthentication = false;
+      challengeResponseAuthentication = false;
     };
   };
 
