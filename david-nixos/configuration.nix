@@ -23,7 +23,7 @@ in {
     hostName = "david";
     defaultGateway = "10.0.1.1";
     nameservers = [ "10.0.1.9" ];
-    useDHCP = true;
+    networkmanager.enable = true;
     interfaces.enp5s0.ipv4.addresses = [{
       address = "10.0.1.10";
       prefixLength = 24;
@@ -41,8 +41,11 @@ in {
     };
   };
 
-  security.acme.certs."home.azuelos.ca" = {
-    email = "isaac@azuelos.ca";
+  security.acme = {
+    acceptTerms = true;
+    certs."home.azuelos.ca" = {
+      email = "isaac@azuelos.ca";
+    };
   };
 
   i18n = {
@@ -61,8 +64,8 @@ in {
   # here to help make that easier.
   environment.systemPackages = with pkgs; [
     neovim
-    rofi
     git
+    tmux
   ];
 
   fonts.fonts = with pkgs; [
@@ -78,7 +81,7 @@ in {
     ddclient = {
       # See https://www.namecheap.com/support/knowledgebase/article.aspx/583/
       # for more on how this is configured.
-      enable = true;
+      enable = true; # for now
       username = "azuelos.ca";
       password = passwords.dynamicDNS;
       domains = [ "home" ];
@@ -96,20 +99,6 @@ in {
         };
       };
     };
-    # Note that if there are any issues during the inital setup, a
-    # misconfigured `nextcloud.home` is left around which can mess up
-    # attempts to fix it. Just `rm` the file, default is
-    # `/var/lib/nextcloud`.
-    nextcloud = {
-      enable = true;
-      hostName = "home.azuelos.ca";
-      nginx.enable = true;
-      autoUpdateApps.enable = true;
-      config = {
-        adminuser = "iaz";
-        adminpass = passwords.nextcloud;
-      };
-    };
     openssh = { 
       enable = true;
       permitRootLogin = "no";
@@ -117,26 +106,18 @@ in {
       passwordAuthentication = false;
       challengeResponseAuthentication = false;
     };
-    compton = {
-      enable = true;
-      backend = "glx";
-      vSync = true;
-    };
     xserver = {
       enable = true;
       layout = "us";
       videoDrivers = [ "nvidia" ];
-      windowManager.i3 = {
-        enable = true;
-        package = pkgs.i3-gaps;
-      };
+      desktopManager.plasma5.enable = true;
     };
   };
 
   users.users.iaz = {
     isNormalUser = true;
     description = "Isaac Azuelos";
-    extraGroups = [ "audio" "wheel" ];
+    extraGroups = [ "audio" "wheel" "networkmanager"];
     home = "/home/iaz";
     shell = pkgs.fish;
   };

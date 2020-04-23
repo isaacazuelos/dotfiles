@@ -1,10 +1,7 @@
 {
   allowUnfree = true;
   packageOverrides = pkgs: with pkgs; rec {
-    polybar-i3 = pkgs.polybar.override {
-      i3Support = true;
-    };
-
+    
     common-tools = pkgs.buildEnv {
       name = "common-tools";
       paths = [
@@ -38,11 +35,10 @@
 
         # Deskotp Apps
         alacritty
+        discord
         emacs
         firefox
-        polybar-i3
         vscode
-        feh
       ];
       extraOutputsToInstall = [ "man" "info" ];
     };
