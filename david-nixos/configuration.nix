@@ -7,8 +7,7 @@
 
 { config, pkgs, ... }:
 
-let
-  passwords = import ./passwords.nix;
+let passwords = import ./passwords.nix;
 in {
   imports = [ ./hardware-configuration.nix ];
 
@@ -24,35 +23,26 @@ in {
     defaultGateway = "10.0.1.1";
     nameservers = [ "10.0.1.9" ];
     networkmanager.enable = true;
-    interfaces.enp5s0.ipv4.addresses = [{
-      address = "10.0.1.10";
-      prefixLength = 24;
-    }];
     firewall = {
       enable = true;
       allowPing = true;
-      allowedTCPPorts = [ 
-        22 # SSH 
-        80 443 # http and https for nextcloud
-      ];
-      allowedUDPPortRanges = [
-        { from = 60000; to = 61000; } # Mosh
-      ];
+      # SSH
+      allowedTCPPorts = [ 22 ];
+      # Mosh
+      allowedUDPPortRanges = [{
+        from = 60000;
+        to = 61000;
+      }];
     };
   };
 
   security.acme = {
     acceptTerms = true;
-    certs."home.azuelos.ca" = {
-      email = "isaac@azuelos.ca";
-    };
+    certs."home.azuelos.ca" = { email = "isaac@azuelos.ca"; };
   };
 
-  i18n = {
-    consoleKeyMap = "us";
-    defaultLocale = "en_US.UTF-8";
-  };
-
+  console.keyMap = "us";
+  i18n.defaultLocale = "en_US.UTF-8";
   time.timeZone = "Canada/Mountain";
 
   programs = {
@@ -62,17 +52,9 @@ in {
 
   # Most packages should be installed per-user with `nix-env`, but these are
   # here to help make that easier.
-  environment.systemPackages = with pkgs; [
-    neovim
-    git
-    tmux
-  ];
+  environment.systemPackages = with pkgs; [ neovim git tmux ];
 
-  fonts.fonts = with pkgs; [
-    fira-code
-    fira-code-symbols
-    source-code-pro
-  ];
+  fonts.fonts = with pkgs; [ fira-code fira-code-symbols source-code-pro ];
 
   sound.enable = true;
   hardware.pulseaudio.enable = true;
@@ -81,7 +63,7 @@ in {
     ddclient = {
       # See https://www.namecheap.com/support/knowledgebase/article.aspx/583/
       # for more on how this is configured.
-      enable = true; # for now
+      enable = true;
       username = "azuelos.ca";
       password = passwords.dynamicDNS;
       domains = [ "home" ];
@@ -89,17 +71,7 @@ in {
       protocol = "namecheap";
       server = "dynamicdns.park-your-domain.com";
     };
-    nginx = {
-      enable = true;
-      virtualHosts."home.azuelos.ca" = {
-        forceSSL = true;
-        enableACME = true;
-        locations."/" = {
-          proxyPass = "http://localhost";
-        };
-      };
-    };
-    openssh = { 
+    openssh = {
       enable = true;
       permitRootLogin = "no";
       # See https://superuser.com/questions/161609 for why we need both.
@@ -117,7 +89,7 @@ in {
   users.users.iaz = {
     isNormalUser = true;
     description = "Isaac Azuelos";
-    extraGroups = [ "audio" "wheel" "networkmanager"];
+    extraGroups = [ "audio" "wheel" "networkmanager" ];
     home = "/home/iaz";
     shell = pkgs.fish;
   };
@@ -126,6 +98,5 @@ in {
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
   # should.
-  system.stateVersion = "19.09"; # Did you read the comment?
+  system.stateVersion = "20.03"; # Did you read the comment?
 }
-

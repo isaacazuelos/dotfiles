@@ -57,11 +57,16 @@ imap jj <Esc>
 autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
 
 " Language features
+
+" General
 set tabstop=4
 set softtabstop=0
 set expandtab
 set shiftwidth=4
 set smarttab
+set ignorecase
+set smartcase
+set gdefault
 
 " Ledger
 let g:ledger_maxwidth = 80

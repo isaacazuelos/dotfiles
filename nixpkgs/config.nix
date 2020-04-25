@@ -10,6 +10,7 @@
         cava
         cmatrix
         exa
+        fzf
         gotop
         htop
         neofetch
