@@ -17,3 +17,7 @@ the packages defined in nixpkgs per machine.
 - David is the name of my desktop.
 - Very is a VPS.
 
+# Misc notes
+
+I don't use emacs much these days, so the config may not be maintained. I mostly
+keep it around in case I decide to go back one day.
