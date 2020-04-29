@@ -22,7 +22,20 @@ in {
     hostName = "david";
     defaultGateway = "10.0.1.1";
     nameservers = [ "10.0.1.9" ];
-    networkmanager.enable = true;
+
+    wireless = {
+      enable = true;
+      networks = passwords.wifiNetworks;
+    };
+
+    interfaces.wlp4s0 = {
+      useDHCP = false;
+      ipv4.addresses = [{
+        address = "10.0.1.10";
+        prefixLength = 24;
+      }];
+    };
+
     firewall = {
       enable = true;
       allowPing = true;
@@ -34,11 +47,6 @@ in {
         to = 61000;
       }];
     };
-  };
-
-  security.acme = {
-    acceptTerms = true;
-    certs."home.azuelos.ca" = { email = "isaac@azuelos.ca"; };
   };
 
   console.keyMap = "us";
