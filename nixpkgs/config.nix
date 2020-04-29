@@ -40,6 +40,9 @@
         emacs
         firefox
         vscode
+
+        # Needed for some nvim plugins :(
+        nodejs
       ];
       extraOutputsToInstall = [ "man" "info" ];
     };

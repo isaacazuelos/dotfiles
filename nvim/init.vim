@@ -16,6 +16,7 @@ Plug 'airblade/vim-gitgutter'
 Plug 'rust-lang/rust.vim'
 Plug 'ledger/vim-ledger'
 Plug 'majutsushi/tagbar'
+Plug 'neoclide/coc.nvim', { 'branch': 'release' }
 call plug#end()
 
 
