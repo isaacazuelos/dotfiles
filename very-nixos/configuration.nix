@@ -51,23 +51,23 @@ in {
     };
   };
 
-  security.acme.certs = {
-    "very.software" = {
-      domain = "very.software";
-      email = "isaac@azuelos.ca";
-      webroot = "/var/lib/acme/acme-challenge";
-      group = "matrix-synapse";
-      extraDomains = {
-        "so.very.software" = null;
+  security.acme = {
+    acceptTerms = true;
+    email = "isaac@azuelos.ca";
+    certs = {
+      "very.software" = {
+        domain = "very.software";
+        group = "matrix-synapse";
+        extraDomains = {
+          "riot.very.software" = null;
+          "so.very.software" = null;
+        };
       };
-    };
+    }; 
   }; 
 
-  i18n = {
-    consoleKeyMap = "us";
-    defaultLocale = "en_US.UTF-8";
-  };
-
+  console.keyMap = "us";
+  i18n.defaultLocale = "en_US.UTF-8";
   time.timeZone = "UTC";
 
   environment.systemPackages = with pkgs; [
@@ -86,7 +86,10 @@ in {
   };
 
   services = {
-    postgresql.enable = true;
+    postgresql = { 
+      enable = true;
+      package = pkgs.postgresql;
+    };
     matrix-synapse = {
       enable = true;
       server_name = config.networking.domain;
@@ -122,11 +125,14 @@ in {
         # i.e. to delegate from the host being accessible as ${config.networking.domain}
         # to another host actually running the Matrix homeserver.
         "${config.networking.domain}" = {
+          enableACME = true;
+          forceSSL = true;
+
           locations."/".extraConfig = ''
             return 404;
           '';
 
-          locations."= /.well-known/so.very.software".extraConfig = let
+          locations."= /.well-known/matrix/server".extraConfig = let
             # use 443 instead of the default 8448 port to unite
             # the client-server and server-server port for simplicity
             server = { "m.server" = "${fqdn}:443"; };
@@ -134,7 +140,7 @@ in {
             add_header Content-Type application/json;
             return 200 '${builtins.toJSON server}';
           '';
-          locations."= /.well-known/very.software".extraConfig = let
+          locations."= /.well-known/matrix/client".extraConfig = let
             client = {
               "m.homeserver" = { "base_url" = "https://${fqdn}"; };
               "m.identity_server" = { "base_url" = "https://vector.im"; };
@@ -163,6 +169,11 @@ in {
             proxyPass = "http://[::1]:8008"; # without a trailing /
           };
         };
+        "riot.${config.networking.domain}" = {
+          enableACME = true;
+          forceSSL = true;
+          root = pkgs.riot-web;
+        };
       };
     };
     openssh = {
@@ -186,6 +197,6 @@ in {
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
   # should.
-  system.stateVersion = "19.09"; # Did you read the comment?
+  system.stateVersion = "20.03"; # Did you read the comment?
 }
 
