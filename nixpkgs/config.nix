@@ -14,6 +14,7 @@
         gotop
         htop
         neofetch
+        neovim
         nixfmt
         ripgrep
         starship
