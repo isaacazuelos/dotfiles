@@ -8,6 +8,6 @@ any-nix-shell fish --info-right | source
 starship init fish | source
 
 alias ls=exa
-alias e=emacs -nw
+alias e="emacs -nw"
 
 abbr -g bank ledger -f ~/Documents/banking/current.ledger
