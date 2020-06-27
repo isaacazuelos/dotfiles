@@ -2,22 +2,19 @@
 
 My configuration files.
 
-Most of these are pretty straight-forward, where the files just need to be
-symlinked into position.
+Most of these are pretty straight-forward, where the files just need
+to be symlinked into position.
 
-Things are a bit more complicated for nixos, and the solution isn't very
-elegant at the moment. For now I just clone the repo and copy the files in
-place to install, and then clone as the user and symlink after.
+Things are a bit more complicated for nixos, and the solution isn't
+very elegant at the moment. For now I just clone the repo and copy the
+files in place to install, and then clone as the user and symlink
+after.
 
-Once the system is installed and everything is linked into place, I can install
-the packages defined in nixpkgs per machine.
+Once the system is installed and everything is linked into place, I
+can install the packages defined in nixpkgs per machine with
+`nix-env`.
 
 # Machines
 
-- David is the name of my desktop.
+- David-8 is the name of my desktop.
 - Very is a VPS.
-
-# Misc notes
-
-I don't use emacs much these days, so the config may not be maintained. I mostly
-keep it around in case I decide to go back one day.

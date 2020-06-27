@@ -7,6 +7,7 @@
 
 { config, pkgs, ... }:
 
+# A passwords file keeps these out of git.
 let passwords = import ./passwords.nix;
 in {
   imports = [ ./hardware-configuration.nix ];
@@ -19,9 +20,9 @@ in {
   nixpkgs.config.allowUnfree = true;
 
   networking = {
-    hostName = "david";
+    hostName = "david-8";
     defaultGateway = "10.0.1.1";
-    nameservers = [ "10.0.1.9" ];
+    nameservers = [ "1.1.1.1" ];
 
     wireless = {
       enable = true;
@@ -60,7 +61,7 @@ in {
 
   # Most packages should be installed per-user with `nix-env`, but these are
   # here to help make that easier.
-  environment.systemPackages = with pkgs; [ neovim git tmux ];
+  environment.systemPackages = with pkgs; [ git tmux ];
 
   fonts.fonts = with pkgs; [ fira-code fira-code-symbols source-code-pro ];
 
@@ -89,7 +90,7 @@ in {
     xserver = {
       enable = true;
       layout = "us";
-      videoDrivers = [ "nvidia" ];
+      videoDrivers = [ "amdgpu" ];
       desktopManager.plasma5.enable = true;
     };
   };
@@ -97,7 +98,7 @@ in {
   users.users.iaz = {
     isNormalUser = true;
     description = "Isaac Azuelos";
-    extraGroups = [ "audio" "wheel" "networkmanager" ];
+    extraGroups = [ "audio" "wheel" ];
     home = "/home/iaz";
     shell = pkgs.fish;
   };
