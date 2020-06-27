@@ -14,7 +14,6 @@
         gotop
         htop
         neofetch
-        neovim
         nixfmt
         ripgrep
         starship
@@ -36,14 +35,13 @@
         common-tools
 
         # Deskotp Apps
+	emacs
+	riot-desktop
         alacritty
         discord
-        emacs
         firefox
-        vscode
-
-        # Needed for some nvim plugins :(
-        nodejs
+	kdeApplications.spectacle
+	vscode
       ];
       extraOutputsToInstall = [ "man" "info" ];
     };
