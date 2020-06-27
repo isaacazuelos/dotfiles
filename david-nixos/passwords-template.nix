@@ -1,4 +1,8 @@
 {
   dynamicDNS = "a bunch of hex junk";
-  wifi = "some secure password";
+  wifiNetworks = {
+    "My SSID" = {
+      psk = "super secure secret password";
+    };
+  };
 }
