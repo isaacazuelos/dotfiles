@@ -6,7 +6,13 @@
 			 (convert-standard-filename "lisp"))))
       (add-to-list 'load-path lisp-path))
 
+;; We do this one early so there's less of a delay during cold
+;; launches.
+(when (display-graphic-p)
+  (require 'frame-layout))
+
 (require 'package-setup)
+
 (require 'decrud)
 (require 'functions)
 (require 'languages)
