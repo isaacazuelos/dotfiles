@@ -90,9 +90,9 @@ This is used for things line truncation and overflow.")
 
 (set-face-font 'default fixed-width-font)
 (set-up-frame-padding)
-(scroll-bar-mode -1)
-(menu-bar-mode -1)
 (tool-bar-mode -1)
+(menu-bar-mode -1)
+(scroll-bar-mode -1)
 
 (enable-header-modeline)
 (hide-bottom-modeline)
@@ -105,6 +105,7 @@ This is used for things line truncation and overflow.")
       window-divider-default-right-width 2
       window-divider-default-places 'right-only
       visible-bell t
+      icon-title-format ""
       ring-bell-function 'ignore
       x-underline-at-descent-line t)
 
