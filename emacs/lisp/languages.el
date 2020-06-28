@@ -1,20 +1,27 @@
-;;; languages.el -- Language-specific configurations
+;;; languages.el -- Language-specific configuration
 ;;; Commentary:
 ;;; Code:
 
-(use-package flycheck
-  :init
-  (global-flycheck-mode))
+;;; Multi-language packages
+(add-hook 'prog-mode-hook #'linum-mode)
+(electric-pair-mode t)
+
+(use-package company
+  :config
+  (global-company-mode t))
 
 ;;; Emacs Lisp
 (add-hook 'emacs-lisp-mode-hook #'eldoc-mode)
 
-;;; English
-(use-package flyspell
-  :custom
-  (flyspell-mode 1))
+(use-package rainbow-delimiters
+  :init
+  (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode))
 
-(use-package ispell)
+;; Ledger
+(use-package ledger-mode)
+
+;; nix
+(use-package nix-mode)
 
 (provide 'languages)
 ;;; languages.el ends here
