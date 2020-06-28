@@ -14,7 +14,7 @@
 (column-number-mode t)
 (save-place-mode t)
 
-(use-package uniquify)
+(require 'uniquify)
 (use-package no-littering)
 
 (provide 'decrud)
