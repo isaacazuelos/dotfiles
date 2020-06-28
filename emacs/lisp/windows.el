@@ -5,4 +5,4 @@
 (cua-mode)
 
 (provide 'windows)
-;;; linux.el ends here
+;;; windows.el ends here

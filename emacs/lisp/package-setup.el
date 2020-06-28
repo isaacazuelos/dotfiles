@@ -5,7 +5,9 @@
 ;;; Code:
 
 (require 'package)
-(add-to-list 'package-archives '("melpa" . "https://stable.melpa.org/packages/") t)
+
+(add-to-list 'package-archives
+	     '("melpa" . "https://stable.melpa.org/packages/") t)
 
 (package-initialize)
 
@@ -13,7 +15,8 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
-(setq use-package-always-defer  t
-      use-package-always-ensure t)
+(require 'use-package)
+
+(setq use-package-always-ensure t)
 
 (provide 'package-setup)
