@@ -9,6 +9,8 @@
       initial-scratch-message nil
       make-backup-files nil)
 
+(setq-default indent-tabs-mode nil)
+
 (fset #'yes-or-no-p #'y-or-n-p)
 
 (column-number-mode t)
