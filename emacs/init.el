@@ -12,8 +12,7 @@
 ;; We do this before other package setup to minimize startup frame
 ;; changes.
 (when (display-graphic-p)
-  (require 'frame-layout)
-  (require 'theme))
+  (require 'layout))
 
 (require 'package-setup)
 (require 'decrud)

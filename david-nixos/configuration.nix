@@ -63,7 +63,12 @@ in {
   # here to help make that easier.
   environment.systemPackages = with pkgs; [ git tmux ];
 
-  fonts.fonts = with pkgs; [ fira-code fira-code-symbols source-code-pro ];
+  fonts.fonts = with pkgs; [
+    fira-code
+    fira-code-symbols
+    source-code-pro
+    source-sans-pro
+  ];
 
   sound.enable = true;
   hardware.pulseaudio.enable = true;
