@@ -59,7 +59,6 @@ in {
         domain = "very.software";
         group = "matrix-synapse";
         extraDomains = {
-          "riot.very.software" = null;
           "so.very.software" = null;
         };
       };
@@ -69,6 +68,7 @@ in {
   console.keyMap = "us";
   i18n.defaultLocale = "en_US.UTF-8";
   time.timeZone = "UTC";
+  nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [
     wget
@@ -110,6 +110,23 @@ in {
           compress = false;
         }];
       }];
+    };
+    minecraft-server = {
+      enable = true;
+      eula = true;
+      openFirewall = true;
+      # from https://discourse.nixos.org/t/howto-setting-up-a-nixos-minecraft-server-using-the-newest-version-of-minecraft/3445
+      package = let 
+        version = "1.16.3";
+	url = "https://launcher.mojang.com/v1/objects/f02f4473dbf152c23d7d484952121db0b36698cb/server.jar";
+	sha256 = "0nxdyw23037cr9cfcsfq1cvpy75am5dzmbgvvh3fq6h89kkm1r1j";
+     in (pkgs.minecraft-server.overrideAttrs (old: rec {
+	name = "minecrat-server-${version}";
+	inherit version;
+	src = pkgs.fetchurl {
+	  inherit url sha256;
+        };
+      }));
     };
     nginx = {
       enable = true;
@@ -168,11 +185,6 @@ in {
           locations."/_matrix" = {
             proxyPass = "http://[::1]:8008"; # without a trailing /
           };
-        };
-        "riot.${config.networking.domain}" = {
-          enableACME = true;
-          forceSSL = true;
-          root = pkgs.riot-web;
         };
       };
     };
